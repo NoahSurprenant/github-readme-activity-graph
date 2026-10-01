@@ -14,13 +14,15 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [22.x]
+                node-version: [22.x, 24.x]
         steps:
             - uses: actions/checkout@v4
             - name: create env file
               run: |
                   touch .env
-                  echo TOKEN=${{ secrets.TOKEN }} >> .env
+                  # A TOKEN secret if set, otherwise the run's own GITHUB_TOKEN - the tests only read
+                  # public contribution data from the GraphQL API.
+                  echo TOKEN=${{ secrets.TOKEN || secrets.GITHUB_TOKEN }} >> .env
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v4
               with:
